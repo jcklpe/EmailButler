@@ -1,5 +1,5 @@
 # Recipient capability checks
-This is an agent-only reference. Use [conversation](conversation.md) to report practical effects and supported next steps; never send the recipient this table or ask them to collect tool names, schemas, tokens, or provider IDs. At setup, inspect the recipient's own agent, installed connectors, selected accounts, permissions, and tool schemas. That environment determines what Email Butler can do. Checks on the developer's accounts do not verify the recipient's setup. Use the public documentation below as dated research pointers, not as installed-feature tests or hard-coded platform limits.
+This is an agent-only reference. Use [conversation](../../../docs/interface.md) to report practical effects and supported next steps; never send the recipient this table or ask them to collect tool names, schemas, tokens, or provider IDs. At setup, inspect the recipient's own agent, installed connectors, selected accounts, permissions, and tool schemas. That environment determines what EmailButler can do. Checks on the developer's accounts do not verify the recipient's setup. Use the public documentation below as dated research pointers, not as installed-feature tests or hard-coded platform limits.
 
 ## Outlook checks to perform during setup
 | Capability | Evidence | Shipping posture |
@@ -20,6 +20,9 @@ Check unsubscribe separately from archive, spam reporting, and rule creation. A 
 Claude's Gmail directory documents create_filter and list_filters, label creation/application/removal, and spam rescue. Its public list does not establish filter deletion. Gmail archive is removal of the INBOX system label, supported by the documented unlabel_thread schema. Some advanced Gmail filters are unsupported and attachment bodies are unavailable through Claude's Gmail connector.
 
 The offline classifier in scripts/capabilities.py recognizes a bounded set of known tool names. It is a starting point for schema inspection, not a complete connector catalog. Unknown names and missing mappings require checking the recipient's actual tools. They do not establish permanent feature absence, permissions, successful execution, or setup readiness.
+
+## Reported trial limitations
+The [November 6 retrospective intake](../../../docs/active-spikes/initial-package.md#november-6-retrospective-intake), recorded 2026-11-07, holds de-identified reports about folder/tag differences, small batches and bulk-processing cost, with their evidence limits and unscheduled questions. No tool schema, permission or live mailbox result was verified during that intake. The evidence classifications above remain unchanged.
 
 ## Sources
 - [Anthropic Microsoft 365 security guide and full tool table](https://support.claude.com/en/articles/12684923-microsoft-365-connector-security-guide)

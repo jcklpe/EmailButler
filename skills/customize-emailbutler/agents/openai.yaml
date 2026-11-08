@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customize EmailButler"
+  short_description: "Change preferences, rules and saved behavior"
+  default_prompt: "Change my email butler: use $customize-emailbutler to preview the behavior I want to customize."

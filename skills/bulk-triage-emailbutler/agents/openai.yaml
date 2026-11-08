@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bulk Triage EmailButler"
+  short_description: "Clean up a backlog with resumable filing"
+  default_prompt: "Use $bulk-triage-emailbutler to plan and carry out an approved inbox cleanup."

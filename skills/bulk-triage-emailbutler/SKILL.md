@@ -1,0 +1,29 @@
+---
+name: bulk-triage-emailbutler
+description: "Plan and carry out approved Gmail/Outlook backlog filing through repeated bounded connector batches, with checkpoints and recovery. Use during EmailButler first-run triage or for a requested large cleanup."
+---
+# Bulk Triage EmailButler
+Resolve this directory's real path; its grandparent is the complete package root. Read [the recipient interface](../../docs/interface.md). Helper commands below run from that root. This workflow handles backlog filing, not an individual-message decision slate. It uses available official connectors and never creates credentials or silently changes access routes.
+
+## Establish the operation
+1. Check account identity, available filing/search/readback operations and existing [onboarding state](references/checkpoints.md). Read [capability evidence](../setup-emailbutler/references/capabilities.md) for a gap. Separate an item-per-call bound, pagination, throttling and the host's execution/confirmation limit; do not infer one from another. A missing folder operation is not repaired by adding a category.
+2. Use counts, native searches and a small metadata/body sample to identify useful high-volume groups and exceptions. Explain concisely: reviewed mail gets a specific home, Inbox holds current work, and filed mail stays retrievable. Demonstrate retrieval through the actual supported surface. Reuse existing folders/labels. Inspect marked mail, ongoing threads and mixed-use senders; preserve stars, flags, read state and unrelated labels/categories. Markers inform the destination rather than automatically retaining mail in Inbox. Honor an explicit keep-in-Inbox instruction.
+3. Show recognizable examples, account, exact cutoff/criteria, exclusions, count or honest estimate, destination/action and recovery route. Age or unread status alone does not establish disposability. Never delete, mark everything read or unsubscribe under a filing approval. Future-mail rules and this backfill are separate operations. Use [Customize EmailButler](../customize-emailbutler/SKILL.md) for durable organization/rule plans; saving a plan does not execute it.
+4. Freeze the selected identities before writes so moving messages cannot invalidate offset pagination or expand the selection. If the provider can honor an explicitly approved dynamic query, disclose and obtain that scope deliberately; otherwise use exact IDs. Explain expected calls/time/usage using known bounds, mark estimates as estimates and agree a practical budget/stopping condition. Host-required confirmations still apply.
+5. Obtain approval for the whole identified operation, including its repeated connector calls. Then execute all of that scope automatically within this run. Do not treat each successful batch as completion or ask the same approval again at an unchanged batch boundary. A new account, destination or selection needs its own approval. Setup approval alone does not approve filing.
+
+## Execute and checkpoint
+Use `scripts/bulk.py` and [the checkpoint contract](references/checkpoints.md) for explicit-ID jobs. Each local job holds up to 1000 IDs within the helper's file-size bounds; a larger frozen selection can span several jobs. Present and approve that union once. Local file limits are not connector limits. Select a batch size no larger than the actual exposed bound. Record onboarding `active` before an approved first-run cleanup begins.
+
+Repeat until the approved scope is complete or a real stopping condition occurs:
+1. Read the next pending batch from the checkpoint. Reconcile prior uncertain operations and refresh targets on resume; never infer current mailbox state or permission from saved progress.
+2. Invoke the supported connector operation on exactly those identities. Prefer provider-native bulk actions when exposed; otherwise repeat supported small calls. Avoid model judgments or body reads for each uniformly selected message.
+3. Record every item's actual result and returned move identity. Independently inspect the relevant destination/state using economical metadata or provider-native checks. Acknowledged success is `reported`, not `verified`; a sample does not verify an entire batch. Reconcile a timeout or partial result before retrying so a completed move is not repeated under its old ID.
+4. Save/read back the checkpoint, then continue to the next batch/job without waiting for a fresh conversational instruction. Give occasional meaningful progress updates, not narration for every call. Keep verified, reported, uncertain, failed and remaining counts distinct.
+
+Respect exposed retry delays and use bounded backoff for transient throttling. Stop for cancellation, budget/context/tool limits, repeated no-progress errors, unavailable permission, changed scope or unresolved write outcomes. Do not treat an access denial as a transient failure. Save a clear checkpoint before ending where possible; do not promise background execution or continuation after the host has stopped.
+
+## Finish or resume
+Report actual verified/remaining counts, destination and any uncertainty. Completed filing does not mean historical messages were read. A new chat requires a fresh preview/approval of remaining actions; saved jobs contain no reusable authorization. Preserve completed results and returned IDs, reconcile potentially unrecorded writes after an interruption, and never restart the whole selection.
+
+For first-run onboarding, record `completed` only when the agreed initial cleanup is independently verified or an inspected Inbox needs no cleanup. Record `deferred` only for the user's explicit decision and `blocked` only with the actual blocker. A pause alone remains `active`. Show the distinction and transition to [Review Inbox EmailButler](../review-inbox-emailbutler/SKILL.md) when useful. The ledger cannot authenticate approval, verify mail or force a host to keep running; those remain agent/host responsibilities.

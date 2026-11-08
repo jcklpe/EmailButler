@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Inbox EmailButler"
+  short_description: "Review incoming mail and make decisions"
+  default_prompt: "Use $review-inbox-emailbutler to review my current inbox."

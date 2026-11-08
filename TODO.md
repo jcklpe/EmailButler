@@ -1,2 +1,2 @@
 # Work index
-- [Initial package and connector capability investigation](docs/active-spikes/initial-package.md) · [execution and QA](docs/active-spikes/initial-package.todo.md)
+- [EmailButler package, migration and connector evidence](docs/active-spikes/initial-package.md) · [execution and QA](docs/active-spikes/initial-package.todo.md) · [November 6 retrospective intake](docs/active-spikes/initial-package.md#november-6-retrospective-intake) · [dated sources](docs/active-spikes/initial-package.md#source-register-and-limits) · [unscheduled product and package questions](docs/active-spikes/initial-package.todo.md#retrospective-questions-not-scheduled)

@@ -2,7 +2,7 @@
 attention: live
 ---
 # Initial package
-Create an agent-operated Gmail/Outlook assistant whose complete workflow, setup instructions, and helper code travel in one skill package. Existing connectors are the initial access route. No custom Google OAuth project, hosted mailbox bridge, or external toolkit is part of this scope.
+EmailButler is an agent-operated Gmail/Outlook assistant distributed as one package of focused skills with shared helpers and contracts. Existing connectors are the initial access route. No custom Google OAuth project, hosted mailbox bridge, or external toolkit is part of this scope.
 
 ## Adopted product requirements
 Provide a useful initial preview before asking a long set of preference questions. Keep account coverage and meaningful limitations visible while handling technical details for the user. Use native labels, categories, and mailbox rules for predictable work. Require the direct-user phrase “change my email butler” to begin changes to durable behavior, with typed proposals, conversational confirmation of the displayed preview, and rollback of local configuration. Technical hashes remain internal; short B labels distinguish alternatives when necessary.
@@ -16,7 +16,7 @@ The public Git repository is the sole distribution route. The user copy-pastes t
 ## Connector conclusion as of 2026-10-31
 Claude's published Microsoft 365 tool table documents rule creation/deletion and category management but establishes neither archive/move nor rule listing/readback. Its directory listing is less complete than its security guide. These are research pointers for the recipient agent's setup checks. The earlier developer-account inspection and credential-free endpoint request did not establish recipient capabilities. The runtime discovers actual capabilities and handles observed limitations.
 
-The maintained source is [references/capabilities.md](../../references/capabilities.md); it distinguishes published support, exposed tools, and live tests. Development records do not override that evidence or grant external access.
+The maintained source is [capability evidence](../../skills/setup-emailbutler/references/capabilities.md); it distinguishes published support, exposed tools, and live tests. Development records do not override that evidence or grant external access.
 
 ## State and verification
 Keep user state outside source/distribution. Native rules remain canonical in the mailbox; a local rule plan does not prove installation. A script can validate structure and limits, but cannot authenticate the human origin of a CLI argument, judge whether a rule is wise, enforce the host's tools, or prevent an agent from bypassing files it can edit. Those limits must be explicit.
@@ -31,3 +31,78 @@ Conversation owns setup, review, settings/history/restore, larger skill edits, c
 
 ## Remaining acceptance work
 Run the README prompt in the recipient's actual agent and capture exact schemas for archive/move, rule list/get/create/delete, and enabled account permissions. Test a known synthetic message and a uniquely named nonmatching rule only after their exact operations are approved. Verify durable state across a fresh chat and validate clean installation on that computer. Avoid claiming those checks from offline fixtures or another person's setup.
+
+## November 6 retrospective intake
+Recorded 2026-11-07 from the November 3 and November 6 trial notes and Aslan's later retrospective; supplemented 2026-11-08 with named sources and his installed-version update feedback. This is feedback intake within the existing spike, preserved in case the work is taken up later. The broader capability and product questions remain unscheduled. Aslan separately authorized the package migration and repository rename on November 8; the implementation is recorded below. No further capability investigation or renewed user trial is authorized by the intake. The original trial is not continuing. Aslan wants room to discuss the feedback, his reasoning and the retrospective conversation with Dorfl before publication; this intake remains local and unpushed.
+
+This spike is the single retrospective record, with its companion planning section tracking the unscheduled questions. The original retrospective capture has been incorporated here. Primary meeting notes remain source evidence, with names/dates below for re-examination; private source locations and unrelated personal context are excluded.
+
+### Source register and limits
+- **2026-11-03 — Email Butler setup and first inbox triage** (meeting with Aslan's boss): setup, initial organization, account-identity uncertainty, folder friction and conflicting batch-size reports. The transcript starts mid-sentence at 00:00:00; its last spoken-text timestamp is 00:22:23, followed by a 00:25:07 end marker. It has no speaker labels or independent audio/screen recording for checking outcomes.
+- **2026-11-06 — Meeting Notes — November 6, 2026** (meeting with Aslan's boss): Email Butler portions at 00:05:44–00:13:55 and 00:18:58–00:35:39 cover the revised retention preference, incomplete bulk moves, usage and stopping. The machine transcript covers 00:03:56–01:02:29, lacks speaker labels and has no available audio for checking. Attribution in the processed notes is inferred. The generated summary overstates the 27-percent cost claim; use the qualified meeting record instead.
+- **2026-11-06 — Email Butler onboarding and bulk triage retrospective (Aslan with Dorfl)**: retrospective discussion incorporated into this record, including his subsequent opinionated-workflow clarification. The available evidence was selected dictation excerpts, not a complete transcript. It supplies Aslan's account and design reasoning, not a reproduced test.
+- **2026-11-08 — Email Butler retrospective feedback**: Aslan's intake request and clarification in conversation. Preserve the feedback for possible future work, allow discussion before publication, and record an explicit way to update installed versions. This is new author feedback, separate from the trial evidence.
+
+These document names and dates are references for future re-examination, not public source links. The trial records do not establish an independent tool trace, permission audit, completed cleanup or final mailbox-state readback.
+
+The ignored `.reference-paths.local.json` locates the private project context and its primary meeting references. The package has no dependency on those local development pointers.
+
+### Initial triage and an understandable inbox model
+**Reported problem:** Aslan says first use did not offer the initial backlog pass needed to establish useful categories and reduce the inbox before ongoing review. The trial also exposed a mismatch between inbox-scoped retrieval habits and filing older mail elsewhere. This is an observed experience as reported, not proof that the current checkout lacks first-run instructions or that a particular code defect caused it. The checkout already describes a guided quick sort in [first-run](../../skills/bulk-triage-emailbutler/SKILL.md) and a separate [backlog track](../../skills/bulk-triage-emailbutler/SKILL.md); recipient behavior remains unverified.
+
+**Aslan's boss's stated preference (November 6):** keep two years of mail in Inbox because annual contract renewals and inbox-scoped searches matter to her; move older mail to Review rather than delete it. This supersedes the November 3 one-year archive choice for that trial. The exact cutoff entered is garbled, and completed moves remain unverified. She chose to stop troubleshooting then and considered doing the moves manually. This is context for the onboarding mismatch, not a product-wide retention policy or permission to resume cleanup.
+
+**Aslan's design direction:** advocate an opinionated inbox-as-current-work workflow. His retrospective frames the design question as ‘how do we message that to the user and get them on board’. Explain the rationale concisely, show that filed mail remains retrievable, and earn informed agreement for initial triage. Long explanations that leave the user unsure what to do are part of the feedback. His comparison of agent verbosity describes this experience, not a measured product comparison.
+
+**Open design question:** how can onboarding communicate and demonstrate this approach well enough for someone to adopt it? Whether the product should support a contrary retention model remains unresolved; a neutral retention toggle is not an agreed answer. This direction does not authorize overriding a mailbox owner's explicit instructions. The shipped override behavior remains unchanged by this intake.
+
+### Connector-specific folders, tags and archive semantics
+**Aslan's report:** the tested Claude Outlook surface exposed tags but not folders. The November 3 notes also describe folder-creation friction. Neither establishes the capabilities of all Outlook connectors, Microsoft Graph, or today's recipient environment. The exact tool schemas, version and permissions were not recovered here.
+
+**Question for later investigation:** which operations does each actual provider/connector/account combination expose and permit: list/create folders, move/archive messages, apply categories or labels, search across folders, and obtain reliable counts? Folder membership, Outlook categories, Gmail labels and archive semantics are distinct. A capability-aware plan must distinguish the provider's features from the selected connector's usable actions. Existing [capability evidence](../../skills/setup-emailbutler/references/capabilities.md) is not upgraded to live verification by these reports.
+
+### Bulk throughput, cost and partial completion
+**Transcript evidence and reported behavior:** the November 6 conversation reports five emails at a time (00:05:44), a manual Outlook move of 75 despite all search results appearing selected (00:23:44–00:24:48), and another small browser-automation batch plus verification overhead before stopping (00:32:49–00:35:15). The November 3 conversation mentioned both five and up to 100. These numbers do not establish a universal API limit, and the product's review-slate size is a separate presentation setting.
+
+**Limits:** Aslan later attributed the 75-message behavior to visible UI rows; that cause has not been independently diagnosed. Aslan's retrospective describes about 20,000 messages overall, while the November 6 meeting mentions about 13,000 older Inbox messages to move (00:29:57). These are different scopes, not interchangeable audited counts. The usage display discussed in the meeting was cumulative monthly spending, not the cleanup's cost or completion percentage. Garbled amounts do not support a precise cost estimate. Full cleanup, final counts and the final mailbox state remain unverified.
+
+**Planning implication and open questions:** assess whether a backlog operation is practical before starting. Distinguish per-call bounds, pagination, throttling, confirmation overhead and UI selection behavior. What elapsed time, calls, model usage, verification work and interruption risk would each supported route incur? What budget and stopping condition would make a later pilot worthwhile? The package migration supplies bounded explicit-ID jobs, a local result ledger and resume guidance. Actual connector-side verification, retry behavior, scale/cost and reversal remain to be established in the recipient environment.
+
+**Aslan's current priority (November 8):** work out dependable bulk execution. In his experience browser automation is expensive and slow, while CLI tools are often robust but require more setup. Connector-first is his leading direction to explore: the skill should prepare the agent to repeat supported operations automatically in bounded batches through the approved scope, rather than stopping after the first small batch. He sees the observed stopping as a sign that the skill did not sufficiently prepare the agent. That is his diagnosis and design direction; the exact reason the trial agent stopped remains unverified. The separately authorized package migration now supplies the batch procedure and local checkpoint ledger; actual connector throughput and recipient behavior remain unverified.
+
+### CLI, protected setup and organizational permission gates
+**Aslan's hypothesis:** a CLI or direct provider tool might perform deterministic, paced batches more cheaply than browser automation. Connectors were initially chosen to avoid manual credential setup. A CLI is an option to compare with connector and provider bulk operations, not an established remedy or a way around underlying limits. Connector-first remains the package access route; no provider API adapter or credential setup was introduced by the package migration.
+
+**Setup idea:** a local GUI-accessible secrets store and agent-guided setup could avoid plaintext files and copying long token strings. Supported OAuth or OS credential-store approaches, renewal/revocation, setup burden and whether a separate vault is needed remain questions. No new credential workflow or automatic token-generation scheme has been selected.
+
+**Unresolved gate:** a working connector or a conversational account-hosting explanation does not establish employer authorization for another app or access route. Allowed applications, administrator consent, scopes and data-handling requirements need verification before any later work-account trial. This intake grants no mailbox access, installation, credential creation or contact with an organization.
+
+### Updating installed versions
+**Aslan's requested capability (November 8):** provide an explicit skill/workflow for updating an installed Email Butler from the repository. He clarified that this means updating installed versions. The existing ‘change my email butler’ customization flow does not settle how recipients obtain a newer package version. The separately authorized package migration now supplies Update EmailButler for inspected, checked whole-package Git updates with recovery and registration repair. Actual recipient update behavior remains acceptance work.
+
+**Recipient acceptance questions:** verify that Update EmailButler explains the candidate, preserves private settings/local changes, obtains agreement within scope, checks the installed result and recovers correctly in the actual host. The installed workflow is in [Update EmailButler](../../skills/update-emailbutler/SKILL.md).
+
+### Skill-package structure, reference ownership and branding
+**Authorized structure (November 8):** EmailButler is a collection under `skills/`, with setup-emailbutler, bulk-triage-emailbutler, review-inbox-emailbutler, customize-emailbutler and update-emailbutler. The root manifest owns membership/version; docs, scripts, tests and assets remain with the complete package. The root is no longer a skill. Each skill has focused trigger metadata and its own branded display name.
+
+**First-run handoff:** setup explicitly invokes bulk triage and checks per-account onboarding state. An account remains required/active until it reaches verified completion, explicit user deferral or a concrete blocker. The helper distinguishes an addressed cleanup decision from completed cleanup. Routine review checks that outcome; a blocker is not permission for a surprise route change or a false completion claim. Bulk jobs checkpoint verified/reported/uncertain/failed results, retain returned IDs and expose the next bounded batch. They do not call connectors, authenticate approval or force the host to continue.
+
+**Reference ownership:** first-run and backlog execution now belong to Bulk Triage; setup, review, customization and updating have their own entrypoints. Supporting capability/host notes, review formatting, typed change records, native-operation details and checkpoint schemas are stored with their owning skills. Shared recipient-interface and private-state contracts are maintained in docs. There is no root references catch-all or copied runtime per skill.
+
+**Naming decision (November 8):** use `EmailButler` for the repository/product and human-facing titles, with lowercase matching identifiers/directories under the [Agent Skills name requirements](https://agentskills.io/specification#name-field). GitHub repository ID 1441245039 is now [jcklpe/EmailButler](https://github.com/jcklpe/EmailButler), retaining public visibility. The checkout and origin URL were renamed to match. Installation migrates only recognized legacy links, preserves conflicts and keeps the existing private state location/profile schema.
+
+### Package migration verification — November 8
+The standard-library suite passes 81 tests, including all prior behavior plus whole-collection registration, recognized legacy/relocation migration, conflict preservation, rollback, canonical shared-resource lookup, five-item batch continuation, uncertain-result blocking, stale checkpoint rejection, fresh-process resume and per-account onboarding outcomes. All five official skill validators and their EmailButler display metadata pass. Local resource/anchor checks pass. These are offline/synthetic and filesystem checks, not successful recipient discovery, mailbox operations or an independent agent usability trial. No connector/account was changed. The source migration remains local until publication is separately authorized.
+
+### Open questions for separate authorization
+1. How should a short first-run explanation, retrieval demonstration and initial-triage preview earn buy-in for inbox-as-current-work? Should contrary retention models be supported at all?
+2. Which exact provider/connector/version/account capabilities and permissions are available, and how should the plan reflect their different filing semantics?
+3. What caused the observed small batches: tool bounds, pagination, throttling, confirmation patterns or UI selection behavior?
+4. Which supported bulk route is practical at backlog scale, with what elapsed time, calls, model usage, budget and stopping condition?
+5. What would reliable partial-result verification, resumability, deduplication and reversal require without repeatedly rereading the same mail?
+6. What supported consent and protected-storage flow could a nontechnical user connect, renew and revoke, and which organizational approvals would it require?
+7. Does the installed update workflow preserve settings, customizations, registrations and recovery in each actual recipient host?
+8. Do recipient agents discover the five workflows correctly, perform the initial bulk handoff and load shared resources reliably?
+9. Does the package migration preserve actual recipient installations and source links beyond the offline fixtures?
+
+These questions preserve possible future work without creating a delivery commitment or permission to investigate. [Planning record](initial-package.todo.md#retrospective-questions-not-scheduled) tracks the intake separately from existing implementation and human QA work.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Setup EmailButler"
+  short_description: "Install EmailButler and connect your mail"
+  default_prompt: "Use $setup-emailbutler to set up EmailButler on this computer."

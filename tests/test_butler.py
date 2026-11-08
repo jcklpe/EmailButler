@@ -371,7 +371,9 @@ class InstallationTests(unittest.TestCase):
             target = Path(temporary).resolve() / "skills"
             result = install_skill.install(ROOT, "codex", target, execute=True)
             self.assertEqual(result["status"], "registered")
-            self.assertEqual((target / "email-butler").resolve(), ROOT)
+            self.assertFalse((target / "email-butler").exists())
+            for entry in result["registrations"]:
+                self.assertEqual(Path(entry["destination"]).resolve(), Path(entry["source"]))
             self.assertEqual(install_skill.install(ROOT, "codex", target, execute=True)["status"], "already_registered")
             self.assertFalse(result["connectors_changed"])
 
@@ -407,8 +409,8 @@ class InstallationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary, patch.object(Path, "home", return_value=Path(temporary).resolve()):
             codex = install_skill.install(ROOT, "codex")
             claude = install_skill.install(ROOT, "claude-code")
-            self.assertTrue(codex["destination"].endswith(".agents/skills/email-butler"))
-            self.assertTrue(claude["destination"].endswith(".claude/skills/email-butler"))
+            self.assertTrue(codex["destination"].endswith(".agents/skills"))
+            self.assertTrue(claude["destination"].endswith(".claude/skills"))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and version private Email Butler configuration; never call mail APIs."""
+"""Validate and version private EmailButler configuration; never call mail APIs."""
 
 import argparse
 import copy

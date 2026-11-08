@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update EmailButler"
+  short_description: "Update EmailButler while preserving your setup"
+  default_prompt: "Use $update-emailbutler to update my installed EmailButler package."

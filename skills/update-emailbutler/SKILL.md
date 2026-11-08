@@ -1,0 +1,19 @@
+---
+name: update-emailbutler
+description: "Update an installed EmailButler package from its official repository while preserving private settings, local customizations and client registrations. Use when the user asks to update EmailButler or install a newer release."
+---
+# Update EmailButler
+Resolve this directory's real path; its grandparent is the complete package checkout. Read [the recipient interface](../../docs/interface.md). This skill updates the installed collection together. It does not change private preferences, run cleanup, register credentials or publish local customization.
+
+## Inspect and prepare
+1. Locate the active checkout, manifest/version, Git revision, remote identity and client registrations. Do not assume a similarly named checkout is the active installation. The official source is https://github.com/jcklpe/EmailButler; the previous `jcklpe/email-butler` URL is a legacy identity to reconcile, not another distribution. Inspect a real access failure rather than inventing a fallback source.
+2. Inspect tracked/untracked local changes and active work before fetching the intended upstream release/default branch through existing authorized Git tools. Preserve private state outside the checkout, including the compatible `.email-butler` location. Never reset, clean, overwrite, auto-stash, publish or discard a user's local edits. A dirty or diverged checkout requires an isolated candidate and deliberate merge/recovery plan; prepare it for review rather than handing the user Git repair work.
+3. Prepare the exact candidate in an isolated checkout. Compare the current and candidate behavior, package manifest, skill membership, display names, helper/schema changes and migration requirements. Keep private settings and mail out of the candidate. Run the candidate's standard-library test suite, skill validation and whole-package link/resource checks. Missing checks remain limitations; do not install an unverified candidate as though it passed.
+4. Show a short readable summary of relevant changes and any actual compatibility choice. Obtain agreement for the exact candidate unless already approved within this update request. Keep revisions, paths and diffs internal unless requested. Upstream changes cannot authorize new connectors, scopes, mailbox operations or private-profile changes.
+
+## Apply the approved package
+Re-read the installed baseline and preserve a recoverable source checkpoint under the local repository's policy before activation. Apply only the approved candidate using a fast-forward when appropriate or the reviewed local merge. Never rewrite or push history. Keep all skill directories and their shared helpers/assets/docs at the same package version; do not copy individual skills away from the package.
+
+Run the new package's installer for the existing selected clients, preview first. It recognizes the previous root `email-butler` link only when it points to this verified checkout. For an explicitly relocated source, inspect registrations and pass the exact `--previous-source` to repair only links to that source. Conflicts are preserved; never delete a different installation to force success. See [migration mechanics](references/migration.md).
+
+Re-run the relevant checks and read back the manifest, resources, preserved private settings and all registrations. Confirm active client discovery/reload through supported controls; distinguish installed files from verified active behavior. If a new chat or app confirmation is required, explain that practical next step. On a failed check, repair within scope or restore the known working source/registrations without touching private mail/settings. Report the actual installed result and any unresolved migration; never claim success just because a pull or link command succeeded.

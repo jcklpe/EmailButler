@@ -26,7 +26,7 @@ Explain the behavior being approved, not its internal classification. “Show fi
 | “Change my email butler: put the action before the summary.” | Prepare a tested skill/code candidate privately, get scoped approval, implement/check it, retain a local recovery point | Before/after example, a simple approval question, and a truthful result |
 | “Reconnect my Outlook.” | Inspect the current connection and use official supported repair controls | The actual sign-in/consent click and whether access was restored |
 | “Give Maya’s emails priority.” | Resolve the sender through available mail context, clarify only if several people fit, map the chosen identity to the typed preference privately | The recognizable person/account and proposed priority behavior; no address-copying or request-file task |
-| “Update Email Butler.” | Inspect the installed version, preserve private settings and local customizations, prepare/check a supported upstream update with recovery | A readable summary of relevant changes and whether the update was verified; no Git operation assigned to the user |
+| “Update EmailButler.” | Inspect the installed version, preserve private settings and local customizations, prepare/check a supported upstream update with recovery | A readable summary of relevant changes and whether the update was verified; no Git operation assigned to the user |
 | “Forget that I dislike this newsletter.” | Identify the specific feedback entries, explain what will be forgotten, obtain approval, remove only those private observations and recheck the tally | The observation being forgotten; no private-file editing or unrelated history deletion |
 
 For settings restoration, identify choices by behavior or readable history descriptions. Ask one short question if “before” is ambiguous. Never guess an application date that the stored history cannot establish. Restoring settings does not undo mail filing, native rules, subscriptions, or code changes; use the relevant checked reversal for the requested outcome.
@@ -51,8 +51,11 @@ Inspect the actual failure privately and perform safe, supported diagnosis/recov
 | A lock blocks editing | “I couldn't confirm that it is safe to save the change yet. I'll check the earlier update before trying again.” |
 | Mailbox rule creation exists but safe inspection/removal is missing | “I can file these messages, but I can't safely set up an automatic rule through this connection.” |
 | A filing operation returned an uncertain result | “I couldn't confirm that those messages moved. I'll check their current location before trying again.” |
-| Installation conflicts with an existing skill | “There's already an Email Butler installation. I'll inspect it and preserve your existing setup.” |
+| Installation conflicts with an existing skill | “There's already an EmailButler installation. I'll inspect it and preserve your existing setup.” |
 
 An existing lock alone does not prove an active writer; inspect available evidence and never delete an unowned/unknown lock just to force a save. If an actual visible app operation must finish or be paused, explain that specific action in ordinary terms.
 
 An unavailable capability is not permission to silently change routes, register an OAuth app, or ask for a terminal. Do not advertise a limitation as repaired until it is checked. Plain language must preserve real limits: settings on one computer are not automatically shared with web chats, and filing mail in an Action folder does not itself create a reminder.
+
+## Workflow entrypoints
+Use [Setup EmailButler](../skills/setup-emailbutler/SKILL.md) for installation/connections and its mandatory first-run handoff; [Bulk Triage EmailButler](../skills/bulk-triage-emailbutler/SKILL.md) for sustained approved cleanup; [Review Inbox EmailButler](../skills/review-inbox-emailbutler/SKILL.md) for short incoming-mail reviews; [Customize EmailButler](../skills/customize-emailbutler/SKILL.md) for guarded lasting behavior and history/recovery; and [Update EmailButler](../skills/update-emailbutler/SKILL.md) for upstream package versions. Human-facing titles retain the EmailButler brand; lowercase identifiers and commands remain agent details.
