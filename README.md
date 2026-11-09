@@ -10,9 +10,22 @@ For first setup, use an agent that can work with files on your computer, such as
 
 An ordinary web chat without access to your computer cannot install this local package. Settings saved here are not automatically shared with web chats.
 
-> Set up EmailButler from the public repository https://github.com/jcklpe/EmailButler on this computer. Retrieve the repository, read AGENTS.md and skills/setup-emailbutler/SKILL.md, and handle the installation. Install or enable the official Gmail and Outlook/Microsoft 365 connectors for this agent, reusing any correct existing connections. Guide me through sign-in or permission clicks that require me. Check the actual accounts and capabilities available here, create private settings without overwriting existing ones, and start the guided first-run bulk triage, explain the proposed cleanup and complete approved work in bounded connector batches. Ask customization questions after I have something useful to react to. Keep private settings and mail out of Git. Do not ask me to use a terminal or edit code. If an actual restriction prevents a step, explain that specific restriction and what I need to do next.
+```text
+Set up EmailButler from the public repository https://github.com/jcklpe/EmailButler on this computer. Retrieve the repository, read AGENTS.md and skills/setup-emailbutler/SKILL.md, and handle the installation. Install or enable the official Gmail and Outlook/Microsoft 365 connectors for this agent, reusing any correct existing connections. Guide me through sign-in or permission clicks that require me. Check the actual accounts and capabilities available here, create private settings without overwriting existing ones, and start the guided first-run bulk triage, explain the proposed cleanup and complete approved work in bounded connector batches. Ask customization questions after I have something useful to react to. Keep private settings and mail out of Git. Do not ask me to use a terminal or edit code. If an actual restriction prevents a step, explain that specific restriction and what I need to do next.
+```
 
 The agent handles the technical steps, including setup, saved preferences, updates, and troubleshooting. You describe what you want and approve the result. Your sign-in, consent, and required approval clicks stay with you. If a work-laptop or app restriction blocks setup, deal with that specific restriction when it occurs.
+
+## Update an existing EmailButler
+Already have EmailButler? Copy this prompt into the agent you use with it. This also works as an entrypoint for older installations that do not yet have an update skill.
+
+```text
+Update my existing EmailButler to the newest published version from https://github.com/jcklpe/EmailButler. Locate the installation this agent actually uses, including an older email-butler installation. Retrieve the current upstream instructions in an isolated candidate and follow its AGENTS.md and skills/update-emailbutler/SKILL.md, even if my installed version has no update skill.
+
+Preserve my private settings, history, saved progress, local customizations and existing mail connections. Inspect local changes before updating, prepare a checked candidate with a recovery point, and explain the relevant changes and any compatibility decision. Handle any necessary skill-registration migration through the update workflow.
+
+Apply the approved update, verify the package and registrations, and check that this agent can discover the updated skills. Explain any required reload or new-chat step and distinguish saved files from verified active behavior. Handle the technical work for me without asking me to use a terminal or edit code. Keep this update scoped to package files and registrations.
+```
 
 ## Everyday use
 - “Review my email.”
