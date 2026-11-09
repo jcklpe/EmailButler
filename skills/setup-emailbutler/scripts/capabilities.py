@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import sys
 
-from private_state import ButlerError, fields, load_json, require, text_value
+from private_state import ButlerError, fields, load_json, require, text_value, email as validate_email
 
 
 MAP = {
@@ -41,6 +41,94 @@ REQUIREMENTS = {
     "filing": {"search", "read", "labels.apply", "archive"},
     "native_rule_lifecycle": {"rules.inspect", "rules.create", "rules.delete"},
 }
+
+# These describe the packaged adapter's wire contract, not provider-wide capability or permission.
+CONTRACTS = {name: name + ".v1" for name in (
+    "gmail.profile", "gmail.labels", "gmail.search", "gmail.read", "gmail.modify", "gmail.bulk_query",
+    "outlook.profile", "outlook.list", "outlook.move", "outlook.categories",
+)}
+
+
+def fact(value, statuses):
+    if value is None:
+        return {"status": "unknown", "basis": "No evidence recorded"}
+    fields(value, {"status", "basis"})
+    require(value["status"] in statuses, "Unknown evidence status")
+    text_value(value["basis"], "evidence basis", 1000)
+    return dict(value)
+
+
+def inspect_inventory(inventory):
+    """Normalize saved schema/host evidence; never call tools or promote names to proof."""
+    require(type(inventory) is dict, "Expected a saved inventory object")
+    if "schema_version" not in inventory:
+        hints = classify(inventory)
+        return {
+            "recorded_evidence_only": True,
+            "live_verified": False,
+            "platform": inventory["platform"],
+            "host": {},
+            "accounts": [{
+                "key": account["key"],
+                "provider": account["provider"],
+                "account": None,
+                "discovery_hints": {key:value for key,value in account.items() if key not in {"key", "provider"}},
+                "identity": fact(None, ()),
+                "access": fact(None, ()),
+                "operations": {},
+            } for account in hints["accounts"]],
+        }
+    fields(inventory, {"schema_version", "platform", "accounts"}, {"host"})
+    require(type(inventory["schema_version"]) is int and inventory["schema_version"] == 1, "Unsupported capability evidence schema")
+    require(inventory["platform"] in {"openai", "claude"}, "Unknown platform")
+    accounts = inventory["accounts"]
+    require(type(accounts) is list and 1 <= len(accounts) <= 20, "Expected 1–20 accounts")
+    host = inventory.get("host", {})
+    fields(host, set(), {"callable_tools", "process_io", "posix_shell"})
+    host = {key: fact(host.get(key), {"available", "unavailable", "unknown"}) for key in ("callable_tools", "process_io", "posix_shell")}
+    result, seen = [], set()
+    for account in accounts:
+        fields(account, {"key", "provider", "tools"}, {"account", "identity", "access", "operations"})
+        # Retain the legacy classifier only as discovery hints.
+        hint = classify({"platform": inventory["platform"], "accounts": [{key: account[key] for key in ("key", "provider", "tools")}]})["accounts"][0]
+        require(account["key"] not in seen, "Duplicate account key")
+        seen.add(account["key"])
+        address = account.get("account")
+        if address is not None:
+            validate_email(address, "inspected account")
+        identity = fact(account.get("identity"), {"confirmed", "mismatch", "unknown"})
+        require(identity["status"] != "confirmed" or address is not None, "Confirmed identity needs its exact account address")
+        operations = account.get("operations", {})
+        require(type(operations) is dict and len(operations) <= len(CONTRACTS), "Invalid operation evidence")
+        checked = {}
+        for name, operation in operations.items():
+            require(name in CONTRACTS and name.startswith(account["provider"] + "."), "Operation belongs to another provider or contract version")
+            fields(operation, {"status", "basis"}, {"tool", "contract", "limits"})
+            item = fact({key: operation[key] for key in ("status", "basis")}, {"exposed", "unavailable", "unknown"})
+            if "tool" in operation:
+                require(operation["tool"] in account["tools"], "Evidence names a tool absent from the saved inventory")
+                item["tool"] = operation["tool"]
+            require(item["status"] != "exposed" or "tool" in item, "Exposed operation needs its actual tool binding")
+            contract = operation.get("contract")
+            if contract is not None:
+                text_value(contract, "inspected contract", 100)
+            item["contract_matches"] = contract == CONTRACTS[name]
+            limits = operation.get("limits", {})
+            fields(limits, set(), {"max_items", "max_page_size"})
+            for key, value in limits.items():
+                require(type(value) is int and 1 <= value <= 1000, "Invalid inspected connector bound")
+            item["limits"] = dict(limits)
+            checked[name] = item
+        result.append({
+            "key": hint["key"],
+            "provider": hint["provider"],
+            "account": address,
+            "discovery_hints": {key:value for key,value in hint.items() if key not in {"key", "provider"}},
+            "identity": identity,
+            "access": fact(account.get("access"), {"allowed", "denied", "unknown"}),
+            "operations": checked,
+        })
+    return {"schema_version": 1, "recorded_evidence_only": True, "live_verified": False, "platform": inventory["platform"], "host": host, "accounts": result}
 
 
 def classify(inventory):
@@ -86,7 +174,8 @@ def main():
     parser.add_argument("--inventory", required=True, type=Path)
     args = parser.parse_args()
     try:
-        print(json.dumps(classify(load_json(args.inventory)), indent=2))
+        value = load_json(args.inventory)
+        print(json.dumps(inspect_inventory(value) if "schema_version" in value else classify(value), indent=2))
         return 0
     except (ButlerError, OSError, ValueError, TypeError) as error:
         print(json.dumps({"error": str(error)}), file=sys.stderr)

@@ -52,10 +52,12 @@ const frozen = await bridge.run({...common, mode: "freeze", inputPath});
 text(frozen);
 ```
 
-After the exact frozen scope and budget are approved in the current session:
+After the exact frozen scope and budget are approved in the current session, use the fresh [planner result](planning.md) for that same run. Here plan is the parsed private report; refuse absent options or a different run, and replan if its input snapshot changed. For a combined allowance, actual selection spending must already have been included.
 
 ```javascript
-const result = await bridge.run({...common, mode: "run", runId, approvedRunId: runId, readLimit: 20, writeLimit: 100, maxAttempts: 3, onProgress: progress => notify("Bulk execution: " + progress.connectorCalls + " connector calls processed; " + progress.status)});
+if (!plan.worker_options || plan.frozen_snapshot?.run_id !== runId) throw new Error("A checked frozen-operation budget is required");
+const caps = plan.worker_options;
+const result = await bridge.run({...common, mode: "run", runId, approvedRunId: runId, maxCalls: caps.max_calls, maxSeconds: caps.max_seconds ?? common.maxSeconds, readLimit: caps.read_limit, writeLimit: caps.write_limit, maxAttempts: 3, onProgress: progress => notify("Bulk execution: " + progress.connectorCalls + " connector calls processed; " + progress.status)});
 text(result);
 ```
 
