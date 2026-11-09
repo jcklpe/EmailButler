@@ -26,13 +26,66 @@ class PackageMigrationTests(unittest.TestCase):
     def test_legacy_registration_is_replaced_only_after_all_new_links_exist(self):
         self.skills.mkdir()
         (self.skills / "email-butler").symlink_to(ROOT)
-        result = install_skill.install(ROOT, "codex", self.skills, execute=True)
+        result = install_skill.install(ROOT, "codex", self.skills, execute=True, migrate_registrations=True)
         self.assertTrue(result["retire_legacy"])
         self.assertFalse((self.skills / "email-butler").is_symlink())
         self.assertEqual(len(result["registrations"]), 5)
         for name in self.names:
             self.assertEqual((self.skills / name).resolve(), ROOT / "skills" / name)
         self.assertEqual(install_skill.install(ROOT, "codex", self.skills, execute=True)["status"], "already_registered")
+
+    def test_ordinary_setup_returns_update_handoff_without_changing_legacy_installation(self):
+        self.skills.mkdir()
+        legacy = self.skills / "email-butler"
+        legacy.symlink_to(ROOT)
+        for execute in (False, True):
+            with self.subTest(execute=execute):
+                result = install_skill.install(ROOT, "codex", self.skills, execute=execute)
+                self.assertEqual(result["status"], "update_required")
+                self.assertEqual(result["next_skill"], "update-emailbutler")
+                self.assertFalse(result["retire_legacy"])
+                self.assertFalse(result["migration_requested"])
+                self.assertEqual(list(self.skills.iterdir()), [legacy])
+                self.assertEqual(legacy.resolve(), ROOT)
+
+    def test_relocated_registration_cannot_be_replaced_without_migration_mode(self):
+        previous = self.base / "old-checkout"
+        self.skills.mkdir()
+        existing = self.skills / self.names[0]
+        old_target = previous / "skills" / self.names[0]
+        existing.symlink_to(old_target)
+        with self.assertRaisesRegex(install_skill.InstallError, "Update EmailButler"):
+            install_skill.install(ROOT, "codex", self.skills, execute=True, previous_source=previous)
+        self.assertEqual(list(self.skills.iterdir()), [existing])
+        self.assertEqual(existing.readlink(), old_target)
+
+    def test_explicit_migration_still_preserves_an_unrecognized_legacy_copy(self):
+        legacy = self.skills / "email-butler"
+        legacy.mkdir(parents=True)
+        marker = legacy / "SKILL.md"
+        marker.write_text("A separately maintained installation")
+        with self.assertRaises(install_skill.InstallError):
+            install_skill.install(ROOT, "codex", self.skills, execute=True, migrate_registrations=True)
+        self.assertEqual(list(self.skills.iterdir()), [legacy])
+        self.assertEqual(marker.read_text(), "A separately maintained installation")
+
+    def test_cli_separates_setup_handoff_migration_preview_and_execution(self):
+        self.skills.mkdir()
+        legacy = self.skills / "email-butler"
+        legacy.symlink_to(ROOT)
+        command = [sys.executable, "-B", str(ROOT / "scripts/install_skill.py"), "--client", "codex", "--skills-dir", str(self.skills)]
+        ordinary = json.loads(subprocess.check_output(command + ["--execute"], text=True))
+        self.assertEqual(ordinary["status"], "update_required")
+        self.assertEqual(list(self.skills.iterdir()), [legacy])
+        preview = json.loads(subprocess.check_output(command + ["--migrate-registrations"], text=True))
+        self.assertEqual(preview["status"], "preview")
+        self.assertTrue(preview["retire_legacy"])
+        self.assertEqual(list(self.skills.iterdir()), [legacy])
+        migrated = json.loads(subprocess.check_output(command + ["--migrate-registrations", "--execute"], text=True))
+        self.assertEqual(migrated["status"], "registered")
+        self.assertFalse(legacy.is_symlink())
+        repeated = json.loads(subprocess.check_output(command + ["--migrate-registrations", "--execute"], text=True))
+        self.assertEqual(repeated["status"], "already_registered")
 
     def test_one_conflict_leaves_the_whole_installation_untouched(self):
         target = self.skills / self.names[-1]
@@ -52,7 +105,7 @@ class PackageMigrationTests(unittest.TestCase):
                 raise OSError("simulated filesystem failure")
             return original(path, target, *args, **kwargs)
         with patch.object(Path, "symlink_to", fail_second), self.assertRaises(install_skill.InstallError):
-            install_skill.install(ROOT, "codex", self.skills, execute=True)
+            install_skill.install(ROOT, "codex", self.skills, execute=True, migrate_registrations=True)
         self.assertEqual(list(self.skills.iterdir()), [self.skills / "email-butler"])
         self.assertEqual((self.skills / "email-butler").resolve(), ROOT)
 
@@ -64,7 +117,7 @@ class PackageMigrationTests(unittest.TestCase):
             (self.skills / name).symlink_to(previous / "skills" / name)
         with self.assertRaises(install_skill.InstallError):
             install_skill.install(ROOT, "codex", self.skills, execute=True)
-        install_skill.install(ROOT, "codex", self.skills, execute=True, previous_source=previous)
+        install_skill.install(ROOT, "codex", self.skills, execute=True, previous_source=previous, migrate_registrations=True)
         for name in self.names:
             self.assertEqual((self.skills / name).resolve(), ROOT / "skills" / name)
 

@@ -19,9 +19,11 @@ def link_target(path):
     return Path(os.path.abspath(path.parent / path.readlink()))
 
 
-def install(source, client, skills_dir=None, execute=False, previous_source=None):
+def install(source, client, skills_dir=None, execute=False, previous_source=None, migrate_registrations=False):
     if client not in CLIENT_DIRECTORIES:
         raise InstallError("Unsupported client; inspect its supported installation mechanism")
+    if previous_source is not None and not migrate_registrations:
+        raise InstallError("Relocated registrations require Update EmailButler and --migrate-registrations; existing skills were left unchanged")
     try:
         source = Path(source).resolve(strict=True)
         package = load_package(source)
@@ -45,7 +47,9 @@ def install(source, client, skills_dir=None, execute=False, previous_source=None
     retire_legacy = legacy.exists() or legacy.is_symlink()
     if retire_legacy and not (legacy.is_symlink() and (legacy.resolve() == source or (previous is not None and link_target(legacy) == previous))):
         raise InstallError("An unrelated or copied legacy skill was left unchanged; inspect it before migrating")
-    result = {"client": client, "source": str(source), "destination": str(base), "registrations": registrations, "retire_legacy": retire_legacy, "discovery_verified": False, "connectors_changed": False}
+    result = {"client": client, "source": str(source), "destination": str(base), "registrations": registrations, "retire_legacy": retire_legacy, "migration_requested": migrate_registrations, "discovery_verified": False, "connectors_changed": False}
+    if retire_legacy and not migrate_registrations:
+        return {"status": "update_required", **result, "retire_legacy": False, "next_skill": "update-emailbutler"}
     if not execute:
         return {"status": "preview", **result}
     completed = []
@@ -91,10 +95,11 @@ def main():
     parser.add_argument("--client", required=True, choices=sorted(CLIENT_DIRECTORIES))
     parser.add_argument("--skills-dir", type=Path)
     parser.add_argument("--previous-source", type=Path)
+    parser.add_argument("--migrate-registrations", action="store_true", help="Apply the registration migration prepared by Update EmailButler; ordinary setup never replaces existing registrations")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
     try:
-        print(json.dumps(install(Path(__file__).resolve().parent.parent, args.client, args.skills_dir, args.execute, args.previous_source), indent=2))
+        print(json.dumps(install(Path(__file__).resolve().parent.parent, args.client, args.skills_dir, args.execute, args.previous_source, args.migrate_registrations), indent=2))
         return 0
     except (InstallError, OSError) as error:
         print(json.dumps({"error": str(error), "connectors_changed": False}), file=sys.stderr)

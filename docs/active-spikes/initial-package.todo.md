@@ -20,12 +20,14 @@ The [November 6 retrospective intake](initial-package.md#november-6-retrospectiv
 - Naming decision implemented: EmailButler repository/product and display names, lowercase skill identifiers, coordinated collection installation and recognized legacy migration. Real recipient compatibility remains acceptance work.
 
 ## Ready for Human QA
+- Existing recipient installation: verify Setup hands registration migration to Update, displays the intended change and resumes setup after the approved migration; helper tests do not establish agent routing.
 - Fresh recipient host: verify all five EmailButler display entries, setup-to-bulk handoff, interrupted cleanup resumption and a whole-package update with preserved settings. Offline tests do not establish these outcomes; any mailbox operation needs its own scope/approval.
 - Recipient's actual Claude/Codex: run the README setup prompt, install/connect requested services, and inspect Outlook archive/move plus the complete rule lifecycle.
 - Recipient-machine installation/discovery, sign-in experience, durable state across a new chat, and real connector permission checks.
 - Real review layout, pause/resume, pattern suggestions, unsubscribe route, and a bounded historical cleanup group in the recipient environment; no live mail or subscription test has been performed during development.
 
 ## Done
+- Give Update EmailButler ownership of existing registration migration. Completed November 9 in package 0.2.1: ordinary setup preserves a recognized old root link and returns an update-required handoff; removal/relocation repair requires explicit migration mode requested by Update. All 85 tests pass, including preview/execution, preservation, idempotence and rollback; no recipient installation or mailbox was changed.
 - Rename the GitHub repository and local checkout to EmailButler. Completed November 8; GitHub identity 1441245039 and public visibility were preserved, origin and private pointers repaired. No source push.
 - Split the root skill into setup, bulk triage, inbox review, customization and update skills with coordinated shared resources. Completed November 8; package 0.2.0 has branded display metadata, no root SKILL.md or root references catch-all, and preserved typed-change/user-interface boundaries.
 - Migrate installation without overwriting existing skills or private settings. Completed November 8; preflight/conflict/rollback/idempotence and recognized old-link/relocation tests pass. The default private state location and profile schema remain compatible.
