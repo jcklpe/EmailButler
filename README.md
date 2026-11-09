@@ -22,9 +22,9 @@ Already have EmailButler? Copy this prompt into the agent you use with it. This 
 ```text
 Update my existing EmailButler to the newest published version from https://github.com/jcklpe/EmailButler. Locate the installation this agent actually uses, including an older email-butler installation. Retrieve the current upstream instructions in an isolated candidate and follow its AGENTS.md and skills/update-emailbutler/SKILL.md, even if my installed version has no update skill.
 
-Preserve my private settings, history, saved progress, local customizations and existing mail connections. Inspect local changes before updating, prepare a checked candidate with a recovery point, and explain the relevant changes and any compatibility decision. Handle any necessary skill-registration migration through the update workflow.
+Preserve my private settings, history, saved progress, local customizations and existing mail connections. Inspect local changes before updating, prepare a checked candidate with a recovery point, and explain the relevant changes and any compatibility decision. Account for older private-state formats and locations, verify backups and any required migration before activation, and handle skill-registration migration through the update workflow.
 
-Apply the approved update, verify the package and registrations, and check that this agent can discover the updated skills. Explain any required reload or new-chat step and distinguish saved files from verified active behavior. Handle the technical work for me without asking me to use a terminal or edit code. Keep this update scoped to package files and registrations.
+Apply the approved update, verify the package and registrations, and check that this agent can discover the updated skills. Explain any required reload or new-chat step and distinguish saved files from verified active behavior. Handle the technical work for me without asking me to use a terminal or edit code. Apply only the reviewed package, registration and private-state migration plan.
 ```
 
 ## Everyday use

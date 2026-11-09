@@ -108,6 +108,13 @@ All executable helpers and all tests now live under their owning skills. There a
 
 All 85 existing test cases are retained exactly once, partitioned by workflow; two additional filesystem/subprocess checks exercise registered symlinks from another working directory and preservation of an existing private profile. Validation results and remaining acceptance limits are tracked in the companion execution record. This changes package organization, not mailbox capabilities or trial evidence; no connector, recipient installation or mail operation is part of the work.
 
+### Update compatibility and private-state migration — November 9
+Aslan authorized an explicit compatibility/migration procedure for older installations, including differences in private-state structure/location, backups and verification before activation. Update now discovers installed source evidence and private roots from that version's contracts and host configuration rather than assuming the newest manifest/default. It distinguishes package versions, record formats and mutable revisions; inventories every state family and local customization; preserves unknown data; and keeps compatible storage in place.
+
+The workflow requires a consistent private snapshot, byte/access checks and a restoration rehearsal with the installed readers before live changes. Any needed conversion runs in private working copies using an understood mapping, with target-reader checks for history/integrity, effective preferences, receipts, checkpoint resume and honest onboarding outcomes. Cutover includes source, state, pointers and registrations; baselines are rechecked, newer work is preserved, and recovery restores compatible components together. Pending approvals remain pending, completed work stays completed, and the update performs no mailbox operations. The README prompt includes this scoped private-state migration.
+
+These are skill instructions and an owned migration contract, not a new universal converter or an executed recipient migration. Existing helpers still accept their known formats. Structural checks, focused existing registration tests and private-copy exercises are recorded in the companion execution record; real recipient discovery, conversion of an actually different legacy format and host activation remain unverified.
+
 ### Open questions for separate authorization
 1. How should a short first-run explanation, retrieval demonstration and initial-triage preview earn buy-in for inbox-as-current-work? Should contrary retention models be supported at all?
 2. Which exact provider/connector/version/account capabilities and permissions are available, and how should the plan reflect their different filing semantics?
