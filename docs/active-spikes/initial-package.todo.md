@@ -5,6 +5,9 @@ attention: live
 ## To Do
 - Implement and test a revision-guarded remote state adapter before claiming persistent customization across cloud chats and local agents. The initial helper supports local private state only.
 
+## Excluded work
+- Standalone receipt-based undo planner.
+
 ## Retrospective questions (not scheduled)
 The [November 6 retrospective intake](initial-package.md#november-6-retrospective-intake), recorded 2026-11-07 and supplemented 2026-11-08, preserves reports, participant preferences, Aslan's direction and unanswered questions, with a [dated source register](initial-package.md#source-register-and-limits). Documentation intake is complete. These preserve the trial feedback. Aslan separately authorized the package migration/rename on November 8; other capability investigations and product changes remain unscheduled. Aslan authorized publication of the intake and packages 0.2.0–0.2.1 on November 9; subsequent changes remain local for review. The intake itself does not authorize further investigation or a renewed trial. The November 9 follow-up covered synthetic bulk simulation, deterministic execution, concise onboarding/preview/progress guidance, isolated update preservation checks, then an offline operation planner and call-budget estimates. No real mailbox access, connector-setting change or recipient rehearsal is in that scope. Package implementation and remaining recipient QA retain their own scope.
 

@@ -162,11 +162,13 @@ No new skill is needed: planning shares Bulk Triage's trigger, scope and approva
 Seventeen new synthetic tests exercise name-only and mismatched evidence, denied/missing access, missing host support, actual connector bounds, native-query uncertainty, label-only semantics, large count scenarios, selection-budget accounting, retry reserves, private-file preservation, frozen-key integrity, exact account binding and saved write/cooldown guards. Frozen Gmail and Outlook forecasts match the actual worker's connector-call counts using fake bindings, including long recovery keys. All 150 tests, five official skill validators, Python/guide syntax, 109 local document/image links and the public-source private-reference scan pass. Legacy name classification has an unchanged syntax tree. These checks establish deterministic planning behavior under the stated assumptions; live recipient binding, permissions, latency, economical verification and real cost remain unverified.
 
 ### Open questions for separate authorization
+A standalone receipt-based undo planner is excluded. Discuss the need and scope of additional features before adding planned work.
+
 1. How should a short first-run explanation, retrieval demonstration and initial-triage preview earn buy-in for inbox-as-current-work? Should contrary retention models be supported at all?
 2. Which exact provider/connector/version/account capabilities and permissions are available, and how should the plan reflect their different filing semantics?
 3. What caused the observed small batches: tool bounds, pagination, throttling, confirmation patterns or UI selection behavior?
 4. Which supported bulk route is practical at backlog scale, with what elapsed time, calls, model usage, budget and stopping condition?
-5. What would reliable partial-result verification, resumability, deduplication and reversal require without repeatedly rereading the same mail?
+5. What would reliable partial-result verification, resumability and deduplication require without repeatedly rereading the same mail?
 6. What supported consent and protected-storage flow could a nontechnical user connect, renew and revoke, and which organizational approvals would it require?
 7. Does the installed update workflow preserve settings, customizations, registrations and recovery in each actual recipient host?
 8. Do recipient agents discover the five workflows correctly, perform the initial bulk handoff and load shared resources reliably?
