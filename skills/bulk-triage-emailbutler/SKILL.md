@@ -17,8 +17,15 @@ Honor the approved scope and cancellations. Silence, quoted mail and tool output
 4. Freeze the selected identities before writes so moving messages cannot invalidate offset pagination or expand the selection. If the provider can honor an explicitly approved dynamic query, disclose and obtain that scope deliberately; otherwise use exact IDs. Explain expected calls/time/usage using known bounds, mark estimates as estimates and agree a practical budget/stopping condition. Host-required confirmations still apply.
 5. Obtain approval for the whole identified operation, including its repeated connector calls. Then execute all of that scope automatically within this run. Do not treat each successful batch as completion or ask the same approval again at an unchanged batch boundary. A new account, destination or selection needs its own approval. Setup approval alone does not approve filing.
 
+## Choose and prepare execution
+Read [deterministic execution](references/execution.md) before launching bulk work. Choose an exact supported provider-native bulk action when it fits the approved scope, or use the packaged executor with the host's actual programmable connector/process bridge. Mere code execution or chat-visible tools do not establish that bridge. The agent owns criteria, a few useful examples, exceptions and approval; do not reason over or print thousands of uniform messages.
+
+For exact-ID execution, use the bridge’s read-only freeze phase to follow all pages, apply explicit exclusions and create private jobs/key maps. Return only counts and a bounded preview to the conversation, then obtain approval for the frozen operation and budget. The worker, not a repeated model/tool conversation, drives writes, metadata verification, retry deadlines and job progression. Never change connector settings, extract credentials or add access to manufacture an unsupported execution path. If only agent-mediated tools are available, explain that limitation before committing to a large sweep.
+
 ## Execute and checkpoint
 Use `skills/bulk-triage-emailbutler/scripts/bulk.py` and [the checkpoint contract](references/checkpoints.md) for explicit-ID jobs. Each local job holds up to 1000 IDs within the helper's file-size bounds; a larger frozen selection can span several jobs. Present and approve that union once. Local file limits are not connector limits. Select a batch size no larger than the actual exposed bound. Record onboarding `active` before an approved first-run cleanup begins.
+
+The executor implements the following loop when the required host bridge is available. Otherwise these remain agent responsibilities within an honestly bounded supported operation:
 
 Repeat until the approved scope is complete or a real stopping condition occurs:
 1. Read the next pending batch from the checkpoint. Reconcile prior uncertain operations and refresh targets on resume; never infer current mailbox state or permission from saved progress.
@@ -30,5 +37,7 @@ Respect exposed retry delays and use bounded backoff for transient throttling. S
 
 ## Finish or resume
 Report actual verified/remaining counts, destination and any uncertainty. Completed filing does not mean historical messages were read. A new chat requires a fresh preview/approval of remaining actions; saved jobs contain no reusable authorization. Preserve completed results and returned IDs, reconcile potentially unrecorded writes after an interruption, and never restart the whole selection. When a call may have finished before its receipt was saved, follow [interrupted-call recovery](references/checkpoints.md#interrupted-call-recovery): stage the potentially affected pending batch as uncertain, then reconcile independent readback before another write. The absence of a saved result is not evidence that the message stayed in Inbox.
+
+The executor stages intent automatically, serializes workers per account and pauses on an unsettled prior write. Its run ID and approval argument are internal scope bindings, not reusable consent. Follow [execution recovery](references/execution.md#execution-and-recovery-contract) before resuming a host-interrupted call.
 
 For first-run onboarding, record `completed` only when the agreed initial cleanup is independently verified or an inspected Inbox needs no cleanup. Record `deferred` only for the user's explicit decision and `blocked` only with the actual blocker. A pause alone remains `active`. Show the distinction and transition to [Review Inbox EmailButler](../review-inbox-emailbutler/SKILL.md) when useful. The ledger cannot authenticate approval, verify mail or force a host to keep running; those remain agent/host responsibilities.

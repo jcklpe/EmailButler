@@ -14,6 +14,11 @@ Public documentation checked on 2026-10-31 is incomplete: the directory lists se
 
 Setup should attempt the supported connector route and report the recipient's actual result. Continue useful supported work when an action is unavailable, and surface only the limitation that matters to the requested operation. A safe native-rule lifecycle needs inspection, exact-ID removal, and readback as well as creation.
 
+## Programmable bulk execution schemas — November 9, 2026
+The OpenAI tools exposed in the development session include `bulk_label_matching_emails` with query/label/archive arguments; `batch_modify_email` for exact Gmail message IDs; minimal `read_email`; and Outlook `move_email` for one message, with folder/filter/pagination fields on `list_messages` and optional Internet Message-ID metadata. This is schema inspection only: no account was called, no permission verified, no connection configured and no mailbox mutated. It does not change the dated Claude Microsoft 365 findings above.
+
+[The bulk executor](../../bulk-triage-emailbutler/references/execution.md) needs callable authenticated tools plus a programmable process bridge. Verify both independently of the tool-name classifier. Exposed fields do not prove a raw filter is accepted, recovery keys are unambiguous or a recipient host can execute a long loop. Prefer server-side bulk work when its exact scope is approved; do not infer a universal five-message cap or silently create a different access route.
+
 ## Other relevant capabilities
 Check unsubscribe separately from archive, spam reporting, and rule creation. A supported unsubscribe operation, a sender-provided link, and a verified subscription change are different things. Missing header/body access can also prevent finding a legitimate unsubscribe link. The workflow must report the actual available route and cannot infer success from a message disappearing from Inbox.
 

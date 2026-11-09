@@ -20,6 +20,7 @@ Find private data from the installed instructions/runtime, supported host settin
 | Saved revisions and proposal history | Readable before/after history, ordering, identities and integrity links; no invented dates or completion claims |
 | Pending proposals and approval receipts | Original scope and pending/approved status, bound preview/base data and provenance; receipts remain separate from implementation/access completion |
 | Observations and action receipts | Account/stream grouping, stable logical and returned message IDs, operation IDs, timestamps, deduplication and actual result status |
+| Bulk execution manifests | Frozen job membership/key hashes, active dispatch intent, retry deadlines, job claims and account write guards; settle/quiesce workers before changing readers or restoring data |
 | Review and bulk checkpoints | Frozen scope/selection, completed/deferred/unresolved outcomes, cursor/revision relationships and current provider identities; completed work must not reappear as pending |
 | Onboarding outcomes | Per-account completed/deferred/blocked/active evidence; absence stays unknown rather than becoming fabricated completion or deferral |
 | Local code/instruction customizations | Intent and behavior carried against their original upstream baseline; private changes never become an upstream publication |

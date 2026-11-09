@@ -34,6 +34,7 @@ Explain briefly what local history helps remember and honor an observation-reten
 | `profile.json`, `pending/`, `revisions/`, `approvals/` | [Customize](../customize-emailbutler/SKILL.md): approved settings/plans, exact proposals, history and implementation/access approval receipts; approval is separate from completion |
 | `journal/` | [Review observations](../review-inbox-emailbutler/references/observations.md): direct feedback and action evidence; cannot change settings or grant permission |
 | `reviews/` | [Review checkpoints](../review-inbox-emailbutler/references/review-format.md#saved-queues): frozen review selections and progress; pending writes need current checks and approval |
+| `bulk-runs/` | [Bulk execution](../bulk-triage-emailbutler/references/execution.md): frozen operation/key maps, durable dispatch intent, job claims and account guards; no reusable authorization |
 | `bulk/` | [Bulk checkpoints](../bulk-triage-emailbutler/references/checkpoints.md): frozen filing selections/results; no reusable authorization |
 | `onboarding.json` | Setup: per-account initial-cleanup outcomes and their evidence or direct-user decision |
 

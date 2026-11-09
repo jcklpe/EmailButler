@@ -20,6 +20,11 @@ REQUIRED_FILES = (
     'skills/setup-emailbutler/scripts/package_info.py',
     'skills/setup-emailbutler/scripts/onboarding.py',
     'skills/bulk-triage-emailbutler/scripts/bulk.py',
+    'skills/bulk-triage-emailbutler/scripts/execute_bulk.py',
+    'skills/bulk-triage-emailbutler/scripts/freeze_bulk.py',
+    'skills/bulk-triage-emailbutler/scripts/connector_adapters.py',
+    'skills/bulk-triage-emailbutler/scripts/connector_loop.js',
+    'skills/bulk-triage-emailbutler/references/execution.md',
     'skills/setup-emailbutler/scripts/run_tests.py',
 )
 
