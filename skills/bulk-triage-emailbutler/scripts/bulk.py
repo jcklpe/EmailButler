@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 import re
 import sys
-import butler as b
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "setup-emailbutler" / "scripts"))
+import private_state as b
 
 JOB_ID = re.compile(r"B-[a-f0-9]{24}\Z")
 STATES = {"pending", "verified", "reported", "uncertain", "failed"}

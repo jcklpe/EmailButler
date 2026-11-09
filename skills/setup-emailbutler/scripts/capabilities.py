@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import sys
 
-from butler import ButlerError, fields, load_json, require, text_value
+from private_state import ButlerError, fields, load_json, require, text_value
 
 
 MAP = {

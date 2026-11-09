@@ -1,11 +1,11 @@
-![EmailButler](assets/email-butler.png)
+![EmailButler](docs/assets/email-butler.png)
 
 # EmailButler
 An email assistant you use by talking to your agent. It helps you review Gmail and Outlook, file recurring mail automatically where supported, and change how it works after showing you a clear preview.
 
 This is an initial prototype. Your agent handles installation, checks your Gmail and Outlook connections, and guides you through any sign-in or permission clicks.
 
-<h2><img src="assets/agent-hands-head-thumbs-up.png" height="32" alt="Robot head giving a thumbs-up"> Start here with your agent</h2>
+<h2><img src="docs/assets/agent-hands-head-thumbs-up.png" height="32" alt="Robot head giving a thumbs-up"> Start here with your agent</h2>
 For first setup, use an agent that can work with files on your computer, such as Codex desktop or Claude Code in the Claude desktop app. Copy the prompt below into that agent. You do not need to use a terminal or edit files.
 
 An ordinary web chat without access to your computer cannot install this local package. Settings saved here are not automatically shared with web chats.
@@ -46,10 +46,10 @@ Saved preferences on one computer are not automatically shared with web chats. I
 <summary>Technical setup and maintenance notes — for agents</summary>
 
 ## Package contents
-The repository is a skill collection described by [emailbutler.json](emailbutler.json). It contains [Setup](skills/setup-emailbutler/SKILL.md), [Bulk Triage](skills/bulk-triage-emailbutler/SKILL.md), [Review Inbox](skills/review-inbox-emailbutler/SKILL.md), [Customize](skills/customize-emailbutler/SKILL.md) and [Update](skills/update-emailbutler/SKILL.md), each with an EmailButler display name. Shared [scripts](scripts/), [interface](docs/interface.md), [private-state contracts](docs/state.md) and [assets](assets/) travel with the collection. Supporting references are owned by the relevant skill rather than a root catch-all. All required workflow guidance and helper code ship together. There is no dependency on the author's personal workspace or Agent Hands installation. The setup marker reuses the Agent Hands robot artwork.
+The repository is a skill collection described by [docs/emailbutler.json](docs/emailbutler.json), EmailButler's own version/membership record consumed by its installer and validator. It is not a host-specific package format. [Setup](skills/setup-emailbutler/SKILL.md), [Bulk Triage](skills/bulk-triage-emailbutler/SKILL.md), [Review Inbox](skills/review-inbox-emailbutler/SKILL.md), [Customize](skills/customize-emailbutler/SKILL.md) and [Update](skills/update-emailbutler/SKILL.md) each own their workflow, supporting scripts and tests. Customize owns the [default profile](skills/customize-emailbutler/assets/default-profile.json). Setup owns shared registration, package validation and private-storage mechanics; other skills call those implementations through the complete checkout. Keep the collection together when installing/updating. No separate toolkit or personal workspace is required. Documentation artwork lives under docs/assets; the setup marker reuses the Agent Hands robot artwork.
 
-For maintainers, Python 3.11+ is sufficient; the runtime uses the standard library. Run `python3 -m unittest discover -s tests -v`. The bundled installer registers all five skills for supported local clients. Setup hands an existing installation that needs registration migration to Update EmailButler, which prepares the change and requests the helper’s explicit migration mode. Conflicting installations remain intact. Shared code and private settings are retained as one coordinated package. Live connector onboarding and mailbox writes require acceptance testing in the recipient's environment; offline tests do not establish them.
+For maintainers, Python 3.11+ is sufficient; runtime and tests use the standard library. Run `python3 -B skills/setup-emailbutler/scripts/run_tests.py`, or add `--skill review-inbox-emailbutler` for one workflow. Every test suite lives in its owning skill; Update owns existing-registration migration tests. Setup registers fresh/correct collections and hands required migration to Update, which requests explicit migration mode after preparing the approved change. Conflicts remain intact. Offline tests do not establish recipient discovery, sign-in, permissions or mailbox behavior.
 
-See [the recipient interface](docs/interface.md), [setup](skills/setup-emailbutler/SKILL.md), [capabilities](skills/setup-emailbutler/references/capabilities.md) and [update/migration](skills/update-emailbutler/SKILL.md). Shared cloud/local persistence still needs an adapter; the shipped helper uses local private state.
+Recipient-facing procedures and relevant private-state contracts live in the focused skills. See [Setup](skills/setup-emailbutler/SKILL.md), [capability evidence](skills/setup-emailbutler/references/capabilities.md) and [Update/migration](skills/update-emailbutler/SKILL.md). Local private state is supported; a shared cloud/local persistence adapter is not shipped.
 
 </details>

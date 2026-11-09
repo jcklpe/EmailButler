@@ -9,7 +9,10 @@ import re
 import sys
 from urllib.parse import urlsplit
 
-import butler as b
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "setup-emailbutler" / "scripts"))
+import private_state as b
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "customize-emailbutler" / "scripts"))
+from profiles import profile_at
 
 
 QUEUE_ID = re.compile(r"Q-[a-f0-9]{24}\Z")
@@ -125,7 +128,7 @@ def open_queue(root, source, batch_size=None):
     validate_input(source)
     root = b.private_directory(root)
     with b.locked(root):
-        default_size = b.profile_at(root)["preferences"]["batch_size"]
+        default_size = profile_at(root)["preferences"]["batch_size"]
         batch_size = default_size if batch_size is None else batch_size
         b.integer(batch_size, 1, 20, "one-off batch size")
         seed = {"input": source, "batch_size": batch_size}

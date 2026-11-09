@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
-import butler as b
+import private_state as b
 
 STATES = {"active", "completed", "deferred", "blocked"}
 

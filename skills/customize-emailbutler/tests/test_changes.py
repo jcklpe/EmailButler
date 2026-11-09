@@ -1,16 +1,16 @@
-from pathlib import Path
+import copy
 import json
+from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / 'skills/setup-emailbutler/scripts'))
+sys.path.insert(0, str(ROOT / 'skills/customize-emailbutler/scripts'))
 import butler
-import capabilities
-import install_skill
 
 
 class ChangeTests(unittest.TestCase):
@@ -222,7 +222,7 @@ class ChangeTests(unittest.TestCase):
         proposal = self.propose()
         mapping = self.state / "reviewed.json"
         butler.atomic_json(mapping, self.reviewed(proposal))
-        output = subprocess.check_output([sys.executable, "-B", str(ROOT / "scripts/butler.py"), "confirm", "--state-dir", str(self.state), "--reviewed", str(mapping), "--reply", "yes"], text=True)
+        output = subprocess.check_output([sys.executable, "-B", str(ROOT / "skills/customize-emailbutler/scripts/butler.py"), "confirm", "--state-dir", str(self.state), "--reviewed", str(mapping), "--reply", "yes"], text=True)
         self.assertEqual(json.loads(output)["status"], "applied")
         self.assertEqual(butler.profile_at(self.state)["last_change_id"], proposal["id"])
 
@@ -311,106 +311,6 @@ class ChangeTests(unittest.TestCase):
             with self.assertRaises(butler.ButlerError):
                 self.activate(proposal)
         self.assertEqual(butler.profile_at(self.state)["revision"], 0)
-
-    def test_existing_lock_prevents_a_second_writer(self):
-        (self.state / ".lock").write_text("active writer", encoding="utf-8")
-        with self.assertRaises(butler.ButlerError):
-            self.propose()
-        self.assertTrue((self.state / ".lock").exists())
-
-    def test_symlink_profile_is_refused(self):
-        profile = self.state / "profile.json"
-        actual = self.state / "separate.json"
-        profile.rename(actual)
-        profile.symlink_to(actual)
-        with self.assertRaises(butler.ButlerError):
-            butler.profile_at(self.state)
-
-    def test_duplicate_json_keys_are_refused(self):
-        request = Path(self.temporary.name).resolve() / "duplicate.json"
-        request.write_text('{"type":"preference.update","type":"access.change"}', encoding="utf-8")
-        with self.assertRaises(butler.ButlerError):
-            butler.load_json(request)
-
-
-class CapabilityTests(unittest.TestCase):
-    def account(self, platform, provider, tools):
-        return capabilities.classify({"platform": platform, "accounts": [{"key": "example", "provider": provider, "tools": tools}]})
-
-    def test_claude_categories_do_not_imply_outlook_filing_or_rule_inspection(self):
-        report = self.account("claude", "outlook", ["outlook_email_search", "read_resource", "outlook_modify_labels", "outlook_create_filter", "outlook_delete_filter"])
-        checks = report["accounts"][0]["checks"]
-        self.assertTrue(checks["review"]["known_names_present"])
-        self.assertIn("archive", checks["filing"]["missing_known_operations"])
-        self.assertEqual(checks["native_rule_lifecycle"]["missing_known_operations"], ["rules.inspect"])
-        self.assertFalse(report["live_verified"])
-
-    def test_openai_filing_does_not_imply_persistent_rules(self):
-        report = self.account("openai", "outlook", ["mcp__codex_apps__microsoft_outlook_email_search_messages", "fetch_message", "set_message_categories", "move_email"])
-        checks = report["accounts"][0]["checks"]
-        self.assertTrue(checks["filing"]["known_names_present"])
-        self.assertFalse(checks["native_rule_lifecycle"]["known_names_present"])
-
-    def test_unknown_tools_are_not_treated_as_verified(self):
-        report = self.account("claude", "outlook", ["outlook_move_new_version"])
-        self.assertEqual(report["accounts"][0]["unknown_tools_to_inspect"], ["outlook_move_new_version"])
-        self.assertFalse(report["accounts"][0]["checks"]["filing"]["known_names_present"])
-
-
-class InstallationTests(unittest.TestCase):
-    def test_preview_changes_no_files(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            target = Path(temporary).resolve() / "skills"
-            result = install_skill.install(ROOT, "codex", target)
-            self.assertEqual(result["status"], "preview")
-            self.assertFalse(target.exists())
-            self.assertFalse(result["discovery_verified"])
-
-    def test_registration_is_idempotent_and_keeps_checkout_as_source(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            target = Path(temporary).resolve() / "skills"
-            result = install_skill.install(ROOT, "codex", target, execute=True)
-            self.assertEqual(result["status"], "registered")
-            self.assertFalse((target / "email-butler").exists())
-            for entry in result["registrations"]:
-                self.assertEqual(Path(entry["destination"]).resolve(), Path(entry["source"]))
-            self.assertEqual(install_skill.install(ROOT, "codex", target, execute=True)["status"], "already_registered")
-            self.assertFalse(result["connectors_changed"])
-
-    def test_existing_skill_is_preserved(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            base = Path(temporary).resolve()
-            target = base / "email-butler"
-            target.mkdir()
-            human_file = target / "SKILL.md"
-            human_file.write_text("User-maintained skill", encoding="utf-8")
-            with self.assertRaises(install_skill.InstallError):
-                install_skill.install(ROOT, "codex", base, execute=True)
-            self.assertEqual(human_file.read_text(), "User-maintained skill")
-
-    def test_dangling_link_is_preserved(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            base = Path(temporary).resolve()
-            target = base / "email-butler"
-            target.symlink_to(base / "missing", target_is_directory=True)
-            with self.assertRaises(install_skill.InstallError):
-                install_skill.install(ROOT, "claude-code", base, execute=True)
-            self.assertTrue(target.is_symlink())
-            self.assertEqual(target.readlink(), base / "missing")
-
-    def test_missing_runtime_is_rejected(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            base = Path(temporary).resolve()
-            with self.assertRaises(install_skill.InstallError):
-                install_skill.install(base, "codex", base / "skills", execute=True)
-            self.assertFalse((base / "skills").exists())
-
-    def test_client_defaults_are_isolated(self):
-        with tempfile.TemporaryDirectory() as temporary, patch.object(Path, "home", return_value=Path(temporary).resolve()):
-            codex = install_skill.install(ROOT, "codex")
-            claude = install_skill.install(ROOT, "claude-code")
-            self.assertTrue(codex["destination"].endswith(".agents/skills"))
-            self.assertTrue(claude["destination"].endswith(".claude/skills"))
 
 
 if __name__ == "__main__":

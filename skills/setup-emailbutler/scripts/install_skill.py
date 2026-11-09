@@ -99,7 +99,7 @@ def main():
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
     try:
-        print(json.dumps(install(Path(__file__).resolve().parent.parent, args.client, args.skills_dir, args.execute, args.previous_source, args.migrate_registrations), indent=2))
+        print(json.dumps(install(Path(__file__).resolve().parents[3], args.client, args.skills_dir, args.execute, args.previous_source, args.migrate_registrations), indent=2))
         return 0
     except (InstallError, OSError) as error:
         print(json.dumps({"error": str(error), "connectors_changed": False}), file=sys.stderr)

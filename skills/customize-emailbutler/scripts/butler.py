@@ -1,138 +1,25 @@
 #!/usr/bin/env python3
-"""Validate and version private EmailButler configuration; never call mail APIs."""
-
+"""Propose, confirm and version private EmailButler changes; never call mail APIs."""
 import argparse
 import copy
-import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import sys
-import tempfile
-from contextlib import contextmanager
 from datetime import datetime, timezone
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "setup-emailbutler" / "scripts"))
+from private_state import ButlerError, account_provider, atomic_json, canonical, default_state_directory, digest, email, fields, integer, load_json, locked, no_symlinks, private_directory, require, text_value
+from profiles import CHANGE_ID, initialize, organization, preferences, profile_at, rule, validate_profile
 
-class ButlerError(ValueError):
-    pass
 
-
-EMAIL = re.compile(r"[^\s@*?<>]+@[^\s@*?<>]+\.[^\s@*?<>]+\Z")
-SLUG = re.compile(r"[a-z][a-z0-9-]{0,63}\Z")
-CHANGE_ID = re.compile(r"C-[a-f0-9]{16}\Z")
 TYPES = {
     "preference.update", "organization.plan", "rule.plan",
     "workflow.revision", "access.change", "configuration.restore",
 }
+
+
 PROPOSAL_ONLY = {"workflow.revision", "access.change"}
-PROFILE_KEYS = {
-    "schema_version", "revision", "last_change_id", "preferences",
-    "organization_plans", "rule_plans",
-}
-
-
-def require(condition, message):
-    if not condition:
-        raise ButlerError(message)
-
-
-def fields(value, required, optional=()):
-    require(type(value) is dict, "Expected an object")
-    require(set(required) <= value.keys(), "Missing required fields: " + ", ".join(sorted(set(required) - value.keys())))
-    require(value.keys() <= set(required) | set(optional), "Unknown fields: " + ", ".join(sorted(value.keys() - set(required) - set(optional))))
-
-
-def text_value(value, name, limit=1000):
-    require(type(value) is str and 0 < len(value.strip()) <= limit, f"{name} must be nonempty text of at most {limit} characters")
-    require(not any(ord(c) < 32 for c in value), f"{name} cannot contain control characters")
-
-
-def email(value, name="email"):
-    require(type(value) is str and len(value) <= 254 and EMAIL.fullmatch(value) is not None, f"{name} must be a complete email address without wildcards")
-
-
-def integer(value, low, high, name):
-    require(type(value) is int and low <= value <= high, f"{name} must be an integer from {low} to {high}")
-
-
-def preferences(value, partial=False):
-    keys = {"batch_size", "detail", "priority_senders"}
-    fields(value, () if partial else keys, keys if partial else ())
-    require(bool(value), "Preference changes cannot be empty")
-    if "batch_size" in value:
-        integer(value["batch_size"], 1, 20, "batch_size")
-    if "detail" in value:
-        require(value["detail"] in ("brief", "expanded"), "detail must be brief or expanded")
-    if "priority_senders" in value:
-        senders = value["priority_senders"]
-        require(type(senders) is list and len(senders) <= 50, "priority_senders must be a list of at most 50 addresses")
-        for sender in senders:
-            email(sender, "priority sender")
-        require(len({s.casefold() for s in senders}) == len(senders), "Duplicate priority sender")
-
-
-def account_provider(value):
-    email(value["account"], "account")
-    require(value["provider"] in ("gmail", "outlook"), "provider must be gmail or outlook")
-
-
-def organization(value):
-    fields(value, {"account", "provider"}, {"labels", "folders"})
-    account_provider(value)
-    total = 0
-    for key in ("labels", "folders"):
-        entries = value.get(key, [])
-        require(type(entries) is list and len(entries) <= 20, f"{key} must be a list of at most 20 entries")
-        require(key != "folders" or not entries or value["provider"] == "outlook", "Use labels for Gmail organization; folders are Outlook plans")
-        names = []
-        for entry in entries:
-            fields(entry, {"name", "purpose"})
-            text_value(entry["name"], key + " name", 100)
-            text_value(entry["purpose"], key + " purpose", 500)
-            names.append(entry["name"].casefold())
-        require(len(set(names)) == len(names), "Duplicate " + key + " names")
-        total += len(entries)
-    require(1 <= total <= 20, "An organization plan needs 1–20 labels/folders in total")
-
-
-def rule(value):
-    fields(value, {"id", "account", "provider", "match", "action"})
-    require(type(value["id"]) is str and SLUG.fullmatch(value["id"]) is not None, "Rule id must be a lowercase slug")
-    account_provider(value)
-    fields(value["match"], {"sender"}, {"recipient", "subject_contains"})
-    email(value["match"]["sender"], "sender")
-    if "recipient" in value["match"]:
-        email(value["match"]["recipient"], "recipient")
-    if "subject_contains" in value["match"]:
-        text_value(value["match"]["subject_contains"], "subject condition", 200)
-    fields(value["action"], {"archive"}, {"label", "folder"})
-    require("label" in value["action"] or "folder" in value["action"], "Rule action needs a label or folder")
-    if "label" in value["action"]:
-        text_value(value["action"]["label"], "rule label", 100)
-        require(value["action"]["label"].strip().casefold() not in {"trash", "spam"}, "Rule labels cannot target Trash or Spam")
-    if "folder" in value["action"]:
-        text_value(value["action"]["folder"], "rule folder", 100)
-        require(value["provider"] == "outlook", "Gmail filing uses label plus archive, not folder moves")
-        require(value["action"]["folder"].strip().casefold() not in {"trash", "deleted items", "deleteditems", "junk", "junk email", "junkemail", "spam"}, "Filing rules cannot target known Trash/Junk destinations")
-        require(value["action"]["archive"] is False, "A specific folder and Archive are conflicting destinations")
-    require(type(value["action"]["archive"]) is bool, "archive must be a boolean")
-    require(not (value["action"]["archive"] or "folder" in value["action"]) or "subject_contains" in value["match"], "Out-of-Inbox filing requires a sender and a subject condition")
-
-
-def validate_profile(value):
-    fields(value, PROFILE_KEYS)
-    require(type(value["schema_version"]) is int and value["schema_version"] == 1, "Unsupported profile schema")
-    integer(value["revision"], 0, 2**53 - 1, "revision")
-    require(value["last_change_id"] is None or (type(value["last_change_id"]) is str and CHANGE_ID.fullmatch(value["last_change_id"]) is not None), "Invalid last_change_id")
-    preferences(value["preferences"])
-    for key, validator in (("organization_plans", organization), ("rule_plans", rule)):
-        require(type(value[key]) is dict and len(value[key]) <= 100, f"{key} must be an object of at most 100 plans")
-        for name, plan in value[key].items():
-            validator(plan)
-            expected = plan["account"].casefold() if key == "organization_plans" else plan["account"].casefold() + ":" + plan["id"]
-            require(name == expected, "Plan key does not match its account/id")
-    return value
 
 
 def validate_request(value):
@@ -166,95 +53,6 @@ def validate_request(value):
         text_value(payload["requested_capability"], "requested capability", 200)
         text_value(payload["purpose"], "access purpose", 1000)
     return value
-
-
-def canonical(value):
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
-
-
-def digest(value):
-    return hashlib.sha256(canonical(value)).hexdigest()
-
-
-def no_symlinks(path):
-    path = Path(os.path.abspath(path))
-    for candidate in (path, *path.parents):
-        require(not candidate.is_symlink(), "State/input paths cannot contain symlinks")
-    return path
-
-
-def load_json(path):
-    path = no_symlinks(path)
-    require(path.is_file() and path.stat().st_size <= 1_000_000, "Expected a JSON file of at most 1 MB")
-    def unique_pairs(pairs):
-        result = {}
-        for key, value in pairs:
-            require(key not in result, "Duplicate JSON key: " + key)
-            result[key] = value
-        return result
-    with path.open(encoding="utf-8") as stream:
-        return json.load(stream, object_pairs_hook=unique_pairs)
-
-
-def atomic_json(path, value):
-    path = no_symlinks(path)
-    encoded = json.dumps(value, indent=2, ensure_ascii=False) + "\n"
-    require(len(encoded.encode("utf-8")) <= 1_000_000, "State file exceeds the 1 MB read/write limit")
-    fd, temporary = tempfile.mkstemp(prefix=".butler-", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as stream:
-            stream.write(encoded)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(temporary, path)
-    finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
-
-
-def private_directory(path, create=False):
-    path = no_symlinks(path)
-    if create:
-        path.mkdir(mode=0o700, parents=True, exist_ok=True)
-    require(path.is_dir(), "Private state directory is missing; run init")
-    if os.name == "posix":
-        require(path.stat().st_mode & 0o077 == 0, "State directory must be private (owner-only permissions)")
-    return path
-
-
-@contextmanager
-def locked(root):
-    lock = no_symlinks(root / ".lock")
-    try:
-        fd = os.open(lock, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    except FileExistsError:
-        raise ButlerError("State is locked; inspect the active writer instead of deleting its lock") from None
-    try:
-        os.close(fd)
-        yield
-    finally:
-        lock.unlink()
-
-
-def profile_at(root):
-    return validate_profile(load_json(root / "profile.json"))
-
-
-def default_state_directory():
-    return Path.home() / ".email-butler"
-
-
-def initialize(root):
-    root = private_directory(root, create=True)
-    with locked(root):
-        for folder in ("pending", "revisions"):
-            private_directory(root / folder, create=True)
-        if (root / "profile.json").exists():
-            return {"status": "existing", "profile": profile_at(root)}
-        default = Path(__file__).resolve().parent.parent / "assets" / "default-profile.json"
-        value = validate_profile(load_json(default))
-        atomic_json(root / "profile.json", value)
-        return {"status": "initialized", "profile": value}
 
 
 def changed_profile(root, current, request):

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "name": "EmailButler",
+  "version": "0.2.2",
+  "repository": "https://github.com/jcklpe/EmailButler",
+  "skills": [
+    "setup-emailbutler",
+    "bulk-triage-emailbutler",
+    "review-inbox-emailbutler",
+    "customize-emailbutler",
+    "update-emailbutler"
+  ]
+}

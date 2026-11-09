@@ -9,7 +9,10 @@ from pathlib import Path
 import re
 import sys
 
-import butler as b
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "setup-emailbutler" / "scripts"))
+import private_state as b
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "customize-emailbutler" / "scripts"))
+from profiles import profile_at
 
 
 EVENT_ID = re.compile(r"E-[a-f0-9]{24}\Z")
@@ -52,7 +55,7 @@ def record(root, event):
     validate_event(event)
     root = b.private_directory(root)
     with b.locked(root):
-        b.profile_at(root)
+        profile_at(root)
         folder = b.private_directory(root / "journal", create=True)
         event_id = "E-" + b.digest(event)[:24]
         path = folder / (event_id + ".json")
@@ -69,7 +72,7 @@ def record(root, event):
 def summarize(root):
     root = b.private_directory(root)
     with b.locked(root):
-        b.profile_at(root)
+        profile_at(root)
         folder = root / "journal"
         if not folder.exists():
             return {"streams": [], "policy_changed": False, "mailbox_changed": False}
