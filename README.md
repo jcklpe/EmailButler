@@ -1,17 +1,17 @@
 ![EmailButler](docs/assets/email-butler.png)
 
 # EmailButler
-An email assistant you use by talking to your agent. It helps you review Gmail and Outlook, file recurring mail automatically where supported, and change how it works after showing you a clear preview.
+An email assistant you use by talking to your agent. It helps you review Gmail and Outlook, clear older mail from Inbox with your approval, and remember your preferences privately.
 
-This is an initial prototype. Your agent handles installation, checks your Gmail and Outlook connections, and guides you through any sign-in or permission clicks.
+This is an initial prototype, focused on Codex desktop on Mac with Gmail and Outlook. Your agent handles installation, checks your connections, and guides you through any sign-in or permission clicks. Automatic filters and rules are deferred until the basic workflow has been tried and reviewed.
 
 <h2><img src="docs/assets/agent-hands-head-thumbs-up.png" height="32" alt="Robot head giving a thumbs-up"> Start here with your agent</h2>
-For first setup, use an agent that can work with files on your computer, such as Codex desktop or Claude Code in the Claude desktop app. Copy the prompt below into that agent. You do not need to use a terminal or edit files.
+For first setup, copy the prompt below into Codex desktop on your Mac. You do not need to use a terminal or edit files. The package also includes Claude Code installation support; the initial recipient workflow targets Codex.
 
 An ordinary web chat without access to your computer cannot install this local package. Settings saved here are not automatically shared with web chats.
 
 ```text
-Set up EmailButler from the public repository https://github.com/jcklpe/EmailButler on this computer. Retrieve the repository, read AGENTS.md and skills/setup-emailbutler/SKILL.md, and handle the installation. Install or enable the official Gmail and Outlook/Microsoft 365 connectors for this agent, reusing any correct existing connections. Guide me through sign-in or permission clicks that require me. Check the actual accounts and capabilities available here, create private settings without overwriting existing ones, and start the guided first-run bulk triage, explain the proposed cleanup and complete approved work in bounded connector batches. Ask customization questions after I have something useful to react to. Keep private settings and mail out of Git. Do not ask me to use a terminal or edit code. If an actual restriction prevents a step, explain that specific restriction and what I need to do next.
+Set up EmailButler from https://github.com/jcklpe/EmailButler on this Mac. Read AGENTS.md and skills/setup-emailbutler/SKILL.md and handle installation. Use the official Gmail and Outlook connections, reusing correct existing ones, and guide me through any required sign-in clicks. Check both accounts and preserve existing private settings. Show how to find filed mail, then propose one manageable cleanup group containing only mail older than two years. Keep newer mail in Inbox during this cleanup. Complete the approved group, save progress privately, and help me review current mail. Keep explanations short and ask one decision at a time. Leave filters and rules for later; do not add CLI credentials or ask me to use a terminal or edit files.
 ```
 
 The agent handles the technical steps, including setup, saved preferences, updates, and troubleshooting. You describe what you want and approve the result. Your sign-in, consent, and required approval clicks stay with you. If a work-laptop or app restriction blocks setup, deal with that specific restriction when it occurs.
@@ -30,25 +30,25 @@ Apply the approved update, verify the package and registrations, and check that 
 ## Everyday use
 - “Review my email.”
 - “Show me what needs a decision.”
-- “Help organize recurring messages.”
+- “Help me file these messages.”
 - “Change my email butler: make the reviews shorter.”
 - “Update EmailButler.”
 
 To change how it works from now on, start with **“change my email butler.”** It will explain what would change and ask “Apply this change?” You can reply “Yes, please” or choose a displayed alternative by saying “the second one.” Other feedback helps with the review you are doing now. You can also ask what changed before, or ask to go back to earlier settings.
 
-Automatic mail rules handle predictable future messages after approval. The butler reviews exceptions and messages needing judgment. Creating a rule for future mail and cleaning up existing mail are separate actions.
+The first draft focuses on cleanup and review. Automatic handling of future mail can be discussed after you have tried it and shared feedback; it is not part of setup.
 
 ## A manageable review
 You get 15 emails at a time in text and two or three in voice, with the most important decisions first. Each has a link, a short explanation and a clear recommendation, plus subscription options when relevant. Approve individual items, change a recommendation, pause, or ask for the next batch. [Example review](skills/review-inbox-emailbutler/references/review-format.md#chat-layout).
 
-First-time setup starts a [guided cleanup](skills/bulk-triage-emailbutler/SKILL.md). Inbox holds current work; reference mail gets a useful home. The agent shows how to find filed mail, then proposes one group with examples before asking to file it. Stars and flags stay with the mail. You can override any recommendation or defer cleanup.
+First-time setup starts a [guided cleanup](skills/bulk-triage-emailbutler/SKILL.md) of mail older than two years. Newer mail stays in Inbox during this pass. The agent shows how to find filed mail, then proposes one group with examples before asking to file it. It builds on useful existing folders and labels and suggests a simpler home when needed. Stars and flags stay with the mail. You can override any recommendation or defer cleanup.
 
 Before a large cleanup, the agent checks what your connection supports and agrees a stopping limit with you. Supported work continues automatically through the approved group; you can pause it. Updates say what has been filed and what still needs attention. Saved progress helps resume unfinished work while regular reviews cover current mail. Any limit on filing, finding mail or saving progress is explained before you rely on it.
 
 ## Remembering and reducing the load
 When your agent can save settings, EmailButler remembers your preferences, review progress, confirmed mail actions, and clear feedback about recurring messages. You can ask “What do you remember?” or “What changed?” Your history stays private. You can also ask to undo a settings change, return filed mail to Inbox, forget specific feedback, or change the review format. The agent looks up what is needed and explains any choice or limit; you do not manage files or code.
 
-The agent checks patterns after completed slates and proactively raises at most one worthwhile rule/subscription suggestion per session. You do not need to ask it to look. Repeatedly archiving a newsletter can prompt “Keep receiving this, unsubscribe, or file it automatically?” The agent checks examples and exceptions with you before setting up a narrow filter or rule. It suggests unsubscribing from unwanted subscriptions and handles it through a supported connection when available, or shows the legitimate sender's unsubscribe link. It never treats silence as consent or changes your rules just because it noticed a pattern. Useful mail can still benefit from specific filing; useful feedback prevents an automatic unsubscribe suggestion, not a filing discussion. Microsoft Planner and cloud-document integrations are outside this release.
+After a completed review, the agent can raise one useful subscription suggestion. It checks examples before suggesting unsubscribe, handles it through a supported connection when available, or shows the legitimate sender's unsubscribe link. Every unsubscribe needs your approval. After your first review, it asks what would make the next one more useful. Filter and rule setup, Microsoft Planner and cloud-document integrations are outside this first draft.
 
 ## Current limits
 What EmailButler can do depends on your current app and mail connections. Your agent checks them and explains any limit when it affects your request, along with the next useful step.

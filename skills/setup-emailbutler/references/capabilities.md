@@ -1,7 +1,10 @@
 # Recipient capability checks
 This is an agent-only reference. Use [recipient-facing workflow](../SKILL.md#conversation-and-recovery) to report practical effects and supported next steps; never send the recipient this table or ask them to collect tool names, schemas, tokens, or provider IDs. At setup, inspect the recipient's own agent, installed connectors, selected accounts, permissions, and tool schemas. That environment determines what EmailButler can do. Checks on the developer's accounts do not verify the recipient's setup. Use the public documentation below as dated research pointers, not as installed-feature tests or hard-coded platform limits.
 
-## Outlook checks to perform during setup
+For initial-draft setup in Codex on Mac, check the two selected account identities, search/retrieval across filing locations, available folder/label operations, readback and the host's bulk execution support. Inspect only capabilities needed for that workflow. Future-mail filter/rule setup and its lifecycle checks are deferred until recipient feedback; missing rule tools do not block supported cleanup/review. Preserve existing rules.
+
+## Dated Claude Outlook evidence — October 31, 2026
+These rule-related findings are research pointers for separately agreed future work, not requirements for the first recipient draft.
 | Capability | Evidence | Shipping posture |
 | --- | --- | --- |
 | Archive or move a message to an arbitrary mail folder | Absent from the published Microsoft 365 read/write tool tables; category changes are distinct from folder moves | Unverified; never advertise full filing support without an actual tool/schema and approved test |
@@ -24,7 +27,7 @@ Check unsubscribe separately from archive, spam reporting, and rule creation. A 
 
 Claude's Gmail directory documents create_filter and list_filters, label creation/application/removal, and spam rescue. Its public list does not establish filter deletion. Gmail archive is removal of the INBOX system label, supported by the documented unlabel_thread schema. Some advanced Gmail filters are unsupported and attachment bodies are unavailable through Claude's Gmail connector.
 
-The offline classifier in skills/setup-emailbutler/scripts/capabilities.py recognizes a bounded set of known tool names. It is a starting point for schema inspection, not a complete connector catalog. Unknown names and missing mappings require checking the recipient's actual tools. They do not establish permanent feature absence, permissions, successful execution, or setup readiness.
+The offline classifier in skills/setup-emailbutler/scripts/capabilities.py recognizes a bounded set of known tool names. It is a starting point for schema inspection, not a complete connector catalog. Unknown names and missing mappings require checking the recipient's actual tools. They do not establish permanent feature absence, permissions, successful execution, or setup readiness. Its native_rule_lifecycle summary is not an initial-draft readiness requirement; leave that deferred capability unprobed.
 
 ## Reported trial limitations
 The [November 6 retrospective intake](../../../docs/active-spikes/initial-package.md#november-6-retrospective-intake), recorded 2026-11-07, holds de-identified reports about folder/tag differences, small batches and bulk-processing cost, with their evidence limits and unscheduled questions. No tool schema, permission or live mailbox result was verified during that intake. The evidence classifications above remain unchanged.
@@ -39,6 +42,6 @@ The [November 6 retrospective intake](../../../docs/active-spikes/initial-packag
 - [OpenAI inbox workflow](https://learn.chatgpt.com/use-cases/manage-your-inbox)
 
 ## Recipient acceptance probe
-During setup in the recipient's Claude or Codex agent, inspect the actual Microsoft 365/Outlook connector tools and resource templates without changing mail. Determine whether the available tools can move/archive a message, list/get inbox rules with their criteria/actions/ordering, create a rule, and delete a rule. Retain exact exposed names and schema fields privately, with unavailable and unknown kept distinct. Do not call a write tool or invent a Graph URI. Distinguish exposed support from a successful read or write test. Present the user with the short practical result; keep the technical inventory for the agent.
+During first-draft setup in the recipient's Codex agent, inspect the actual Gmail and Outlook connector tools without changing mail. Determine whether each selected account supports the required search, filing and readback operations and whether the host can run the planned bounded operation. Retain exact exposed names and schema fields privately, with unavailable and unknown kept distinct. Do not call a write tool or invent a Graph URI. Distinguish exposed support from a successful read or write test. Present the user with the short practical result; keep the technical inventory for the agent.
 
-The inventory can settle exposed tool support. Identity checks and read-only rule inspection can settle read permission. An exact approved synthetic-message/rule cycle is still needed for write/readback verification. Do not create an uninspectable rule as a capability probe.
+The inventory can settle exposed tool support. Identity checks and authorized mail reads can settle read permission. An exact approved message operation is still needed for write/readback verification; read-only setup cannot establish it. Do not include a rule cycle in initial-draft acceptance. If rule work is separately agreed later, inspect its full lifecycle before proposing any installation; never create an uninspectable rule as a capability probe.
